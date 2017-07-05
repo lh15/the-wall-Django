@@ -1,0 +1,1 @@
+web: gunicorn the_wall.wsgi --log-file -
