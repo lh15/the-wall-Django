@@ -2,119 +2,128 @@
 <html lang="en">
 
 <head>
-    <title>the wall</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <style>
-        *{
-            font-family: sans-serif;
-        }
-        body {
-            background: lightgoldenrodyellow;
-        }
-        .container {
-            width: 80vw;
-            text-align: center;
-            margin: 0px auto;
-        }
-        span {
-            font-weight: bold;
-        }
-        .message{
-            
-            display: inline-block;
-            padding: 5px;
-            
-        }
-        .comment{
-            border: 1px solid gray;
-            display: inline-block;
-            padding: 5px;
-            background: lightgray;
-        }
-        .post{
-            border: 1px solid gray;
-            margin: 5px auto;
-            padding: 5px;
-            background: seashell;
-        }
-        hr {
-            width: 80%;
-        }
-        .messages {
-            color: red;
-            font-size: 2em;
-            text-align: center;
-        }
-    </style>
+  <title>the wall</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Zilla+Slab:400,700');
+    * {
+      font-family: 'Zilla Slab', serif;
+      color: lightcyan
+    }
+
+    body {
+      background: lightslategrey;
+    }
+
+    .container {
+      width: 80vw;
+      text-align: center;
+      margin: 0px auto;
+    }
+
+    span {
+      font-weight: bold;
+    }
+
+    .message {
+
+      display: inline-block;
+      padding: 5px;
+    }
+
+    .comment {
+      border: 1px solid gray;
+      display: inline-block;
+      padding: 5px;
+      background: cornflowerblue;
+    }
+
+    .post {
+      border: 1px solid gray;
+      margin: 5px auto;
+      padding: 5px;
+      background: darkcyan;
+    }
+
+    hr {
+      width: 80%;
+    }
+
+    .messages {
+      color: red;
+      font-size: 2em;
+      text-align: center;
+    }
+    input, button, textarea {
+      background: gray;
+      font-size: 1.3em;
+    }
+  </style>
 </head>
 
 <body>
-    <h1>Message Wall</h1>
-    <!--<p>Welcome {{ request.session.logged_in }}</p>-->
-    <h2>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h2>
-    <a href="{%url 'first_app:log_out' %}">log off</a>
-    
+  <h1>Message Wall</h1>
+  <!--<p>Welcome {{ request.session.logged_in }}</p>-->
+  <h2>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h2>
+  <a href="{%url 'first_app:log_out' %}">log off</a>
+
+  <hr> {% if messages %} {% for message in messages %}
+  <p class="messages" {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+  {% endfor %} {% endif %}
+  <div class="container">
+    <h1>Welcome to the message wall</h1>
     <hr>
-    {% if messages %}
-            {% for message in messages %}
-                <p class="messages"{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
-            {% endfor %}
-    {% endif %}
-    <div class="container">
-        <h1>Welcome to the message wall</h1>
-            <hr>
-        <form action="{%url 'first_app:process_message' %}" method="POST">
-            {% csrf_token %}
-            <p>Post a message</p>
-            <textarea name="message" style="width: 80%; height: 200px;" required></textarea><br>
-            <button type="submit" class="signupbtn">Post Message</button>
+    <form action="{%url 'first_app:process_message' %}" method="POST">
+      {% csrf_token %}
+      <p>Post a message</p>
+      <textarea name="message" style="width: 80%; height: 200px;" required></textarea><br>
+      <button type="submit" class="signupbtn">Post Message</button>
+    </form>
+
+
+    {% for message in all_messages %}
+    <div class="post">
+      <h3><span>Posted by:</span> {{ message.user.first_name }} {{message.user.last_name }} - Posted on: {{ message.created_at }}
+      </h3>
+      <hr>
+
+      <p class="message">{{ message.message }}</p>
+      <br> {% for comment in message.comment_set.all %}
+      <div class="comment">
+        <p><span>Commented by:</span> {{ comment.user.first_name }} {{comment.user.last_name }} <br>{{comment.comment}}</p>
+        <form action="{%url 'first_app:delete_comment' id=comment.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="delete">Delete Comment - Only your comments :)</button>
         </form>
+      </div>
+      <br>
+      <br> {% endfor %}
 
 
-        {% for message in all_messages %}
-            <div class="post">
-                <h3><span>Posted by:</span> {{ message.user.first_name }}  {{message.user.last_name }}  - Posted on: {{ message.created_at }}</h3>
-                <hr>
-
-                <p class="message">{{ message.message }}</p>
-                <br>
-                {% for comment in message.comment_set.all %}
-                    <div class="comment">
-                        <p><span>Commented by:</span> {{ comment.user.first_name }}  {{comment.user.last_name }}  <br>{{comment.comment}}</p>
-                            <form action="{%url 'first_app:delete_comment' id=comment.id %}" method="POST">
-                            {% csrf_token %}
-                                <button type="submit" class="delete">Delete Comment - Only your comments :)</button>
-                            </form>
-                    </div>
-                    <br>
-                    <br>
-                {% endfor %}
-                
-
-                <form action="{%url 'first_app:process_comment' message_id=message.id %}" method="POST">
-                {% csrf_token %}
-                <p><span>Post a comment</span></p>
-                <input name="comment" required></input><br>
-                <button type="submit">Post Comment</button>
-                </form>
-                <form action="{%url 'first_app:delete_message' id=message.id %}" method="POST">
-                {% csrf_token %}
-                    <button type="submit" class="delete">Delete Message - Only your messages :)</button>
-                </form>
-            </div>
-        {% endfor %}
+      <form action="{%url 'first_app:process_comment' message_id=message.id %}" method="POST">
+        {% csrf_token %}
+        <p><span>Post a comment</span></p>
+        <input name="comment" required></input><br>
+        <button type="submit">Post Comment</button>
+      </form>
+      <form action="{%url 'first_app:delete_message' id=message.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="delete">Delete Message - Only your messages :)</button>
+      </form>
     </div>
-    {% load tz_detect %}
-{% tz_detect %}
-    <script>
-        $(function() {
-            $('body').on('click', '.delete', function() {
-                return window.confirm("Are you sure you want to delete?");
-            });
-        });
-    </script>
+    {% endfor %}
+  </div>
+  {% load tz_detect %} {% tz_detect %}
+  <script>
+    $(function () {
+      $('body').on('click', '.delete', function () {
+        return window.confirm("Are you sure you want to delete?");
+      });
+    });
+  </script>
 </body>
 
 </html>
