@@ -51,7 +51,7 @@
 </head>
 
 <body>
-    <h1>Coding Dojo Wall - django edition</h1>
+    <h1>Message Wall</h1>
     <!--<p>Welcome {{ request.session.logged_in }}</p>-->
     <h2>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h2>
     <a href="{%url 'first_app:log_out' %}">log off</a>
@@ -63,7 +63,7 @@
             {% endfor %}
     {% endif %}
     <div class="container">
-        <h1>Welcome to the Dojo message wall</h1>
+        <h1>Welcome to the message wall</h1>
             <hr>
         <form action="{%url 'first_app:process_message' %}" method="POST">
             {% csrf_token %}
@@ -85,7 +85,7 @@
                         <p><span>Commented by:</span> {{ comment.user.first_name }}  {{comment.user.last_name }}  <br>{{comment.comment}}</p>
                             <form action="{%url 'first_app:delete_comment' id=comment.id %}" method="POST">
                             {% csrf_token %}
-                                <button type="submit" class="delete">Delete Comment</button>
+                                <button type="submit" class="delete">Delete Comment - Only your comments :)</button>
                             </form>
                     </div>
                     <br>
@@ -101,7 +101,7 @@
                 </form>
                 <form action="{%url 'first_app:delete_message' id=message.id %}" method="POST">
                 {% csrf_token %}
-                    <button type="submit" class="delete">Delete MESSAGE</button>
+                    <button type="submit" class="delete">Delete Message - Only your messages :)</button>
                 </form>
             </div>
         {% endfor %}
