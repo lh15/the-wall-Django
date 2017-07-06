@@ -57,10 +57,18 @@
       font-size: 2em;
       text-align: center;
     }
-    input, button, textarea {
+
+    input,
+    button,
+    textarea {
       background: #BCD8C1;
       font-size: 1.3em;
       color: #222E50
+    }
+
+    textarea {
+      width: 65% !important;
+      height: 124px !important;
     }
   </style>
 </head>
@@ -87,7 +95,7 @@
 
     {% for message in all_messages %}
     <div class="post">
-      <h3><span>Posted by:</span> {{ message.user.first_name }} {{message.user.last_name }} - Posted on: {{ message.created_at }}
+      <h3><span>Posted by:</span> {{ message.user.first_name }} {{message.user.last_name }} - Posted on: {{ message.created_at}}
       </h3>
       <hr>
 
